@@ -1,0 +1,21 @@
+# Model Card — Pheno-Hunting Prototype
+
+## Model overview
+Models map chemotype vectors (cannabinoids & terpenes) ± genotype PCs to therapeutic-effect labels (binary per-effect). Trained on available lab datasets; intended for hypothesis generation and to assist lab/clinical teams in prioritizing candidate chemovars for validation.
+
+## Intended use
+- Aid researchers and medical facilities in identifying chemovar feature-signatures that correlate with reported therapeutic effects.
+- Support clinical/experimental follow-up; NOT for direct clinical decision-making.
+
+## Limitations & risks
+- Observational datasets are biased (commercial samples skew high-THC). See Smith et al., PLOS ONE (2022). :contentReference[oaicite:12]{index=12}
+- Confounding due to growth environment, analytic method, and labeling inconsistencies.
+- Model outputs are hypotheses — require wet-lab / clinical validation.
+
+## Safety & ethics
+- Use only legally obtained, properly licensed data.
+- If using patient outcomes, ensure de-identification and IRB/HIPAA compliance.
+- Provide model card, versioning, and provenance for every released model.
+
+## Contact
+Project lead: [your name / contact info]
