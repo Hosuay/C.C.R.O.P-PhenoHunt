@@ -1,0 +1,11 @@
+# Data sources & licensing (record)
+
+Potential public sources referenced in this project:
+- Cannlytics datasets (Hugging Face): cannabis_analytes, cannabis_results — uses dataset browsing via `datasets.load_dataset`. Check Hugging Face dataset license before use. :contentReference[oaicite:7]{index=7}
+- Kannapedia (Medicinal Genomics): genomic strain library (requires account/export access for full genomic downloads). Use only with permissions. :contentReference[oaicite:8]{index=8}
+- NCBI genome assemblies for Cannabis sativa (RefSeq / GenBank) — public genome assemblies for computational genomics. Check NCBI terms. :contentReference[oaicite:9]{index=9}
+- Academic references:
+  - Smith et al., *The phytochemical diversity of commercial Cannabis in the United States* (PLOS ONE, 2022) — chemotype distribution & bias. :contentReference[oaicite:10]{index=10}
+  - Vergara et al., modeling cannabinoids from large-scale samples (2020). :contentReference[oaicite:11]{index=11}
+
+Always check dataset licenses, attribution requirements, and privacy constraints (especially for patient-linked data).
