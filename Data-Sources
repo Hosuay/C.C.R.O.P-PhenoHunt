@@ -9,3 +9,30 @@ Potential public sources referenced in this project:
   - Vergara et al., modeling cannabinoids from large-scale samples (2020). :contentReference[oaicite:11]{index=11}
 
 Always check dataset licenses, attribution requirements, and privacy constraints (especially for patient-linked data).
+
+# Sources Used in this Project
+
+1. Leafly Cannabis Strains Metadata Dataset (Kaggle): 
+https://www.kaggle.com/datasets/gthrosa/leafly-cannabis-strains-metadata
+
+2. Leafly Website (strain information, profiles, and effects):
+https://www.leafly.com/strains
+
+3. SeedFinder Cannabis Strain Database:
+https://seedfinder.eu/en
+
+4. Kannapedia Cannabis Genetics Database:
+https://kannapedia.net
+
+5. FuzzyWuzzy Python Library (Fuzzy String Matching):
+https://github.com/seatgeek/fuzzywuzzy
+
+6. PyTorch Machine Learning Framework:
+https://pytorch.org/
+
+7. IPyWidgets (Interactive widgets for Jupyter/Colab):
+https://ipywidgets.readthedocs.io/
+
+8. Plotly Express (Visualization library):
+https://plotly.com/python/plotly-express/
+
