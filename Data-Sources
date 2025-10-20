@@ -10,29 +10,73 @@ Potential public sources referenced in this project:
 
 Always check dataset licenses, attribution requirements, and privacy constraints (especially for patient-linked data).
 
-# Sources Used in this Project
+Sources and Acknowledgments
 
-1. Leafly Cannabis Strains Metadata Dataset (Kaggle): 
+Data Sources
+Leafly Cannabis Strain Profiles
+Source: https://www.leafly.com/strains
+Used for real-world cannabinoid and terpene data scraping (THC, CBD, Myrcene, etc.).
+Chemical composition patterns were referenced to simulate realistic cannabinoid–terpene distributions.
+
+Kaggle Dataset: Leafly Cannabis Strains Metadata
+Dataset: gthrosa/leafly-cannabis-strains-metadata
 https://www.kaggle.com/datasets/gthrosa/leafly-cannabis-strains-metadata
+Used for structured training data and validation of compound ranges and strain naming convention.
 
-2. Leafly Website (strain information, profiles, and effects):
-https://www.leafly.com/strains
+Scientific Literature References (for chemical and therapeutic associations)
 
-3. SeedFinder Cannabis Strain Database:
-https://seedfinder.eu/en
+Russo, E. B. (2011). Taming THC: Potential cannabis synergy and phytocannabinoid-terpenoid entourage effects.
+British Journal of Pharmacology, 163(7), 1344–1364.
 
-4. Kannapedia Cannabis Genetics Database:
-https://kannapedia.net
+Booth, K., & Bohlmann, J. (2019). Terpenes in Cannabis sativa – From plant genome to humans.
+Plant Science, 284, 67–72.
+These papers informed effect relationships (e.g., caryophyllene → anti-inflammatory, linalool → sedative).
 
-5. FuzzyWuzzy Python Library (Fuzzy String Matching):
-https://github.com/seatgeek/fuzzywuzzy
+Software, Libraries, and Frameworks
+Python 3.12 (Colab Environment)
 
-6. PyTorch Machine Learning Framework:
-https://pytorch.org/
+Torch (PyTorch) — autoencoder latent-space modeling
 
-7. IPyWidgets (Interactive widgets for Jupyter/Colab):
-https://ipywidgets.readthedocs.io/
+Scikit-learn — logistic regression models for therapeutic effect classification
 
-8. Plotly Express (Visualization library):
-https://plotly.com/python/plotly-express/
+Pandas, NumPy — data management and computation
+
+FuzzyWuzzy — approximate string matching for user-input strain recognition
+
+Plotly — chemical radar graphs and hybrid visualization
+
+IPyWidgets — interactive UI elements in Colab
+
+BeautifulSoup4 & Requests — scraping strain profile data directly from Leafly
+
+PDFPlumber & Tabula-Py — future extensions for extracting COA (Certificate of Analysis) lab reports
+
+Original Development and Attribution
+Project Concept: Generative cannabis hybridization using chemical feature fusion
+
+Core Architect: You (GitHub Project Author)
+
+Model Infrastructure: Developed through open AI-statistical modeling tools on Google Colab, 2025.
+
+Advisory Schema and Code Design Contributions:
+Developed collaboratively through AI-assisted prototyping (Perplexity AI interactive modeling) for optimizing Autoencoder structure, feature alignment, and Colab UI integration.
+
+Inspiration and Community Acknowledgments
+The Cannabis Breeding and Pheno Hunting community forums at:
+
+Overgrow.com
+
+THCFarmer
+
+Reddit /r/CannabisBreeding
+
+Open discussions and shared references for hybrid strain architecture inspired visualization and model tuning decisions.
+
+Disclaimer
+This project is intended for educational and research purposes only.
+It does not provide medical, legal, or cultivation advice.
+All strain effect predictions are probabilistic models trained on limited metadata and public records; they should not be interpreted as guarantees of therapeutic outcomes.
+
+Version
+Cannabis Pheno Hunter Pro (v1.0 — Colab Edition, 2025-10-19)
 
