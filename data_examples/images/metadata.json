@@ -1,0 +1,41 @@
+{
+  "study_info": {
+    "study_id": "STUDY_2025_PHENOMICS",
+    "study_name": "Cannabis Phenomics Trial 2025",
+    "location": "Research Facility",
+    "season": "2025 Winter",
+    "sacred_geometry_seed": 369
+  },
+  "images": {
+    "sample_plant_001.png": {
+      "plant_id": "BD_001",
+      "strain": "Blue Dream",
+      "timestamp": "2025-01-15T10:00:00Z",
+      "camera": "RGB_High_Res",
+      "growth_stage": "Flowering_Week_6",
+      "batch": "F1_Generation"
+    },
+    "sample_plant_002.png": {
+      "plant_id": "OK_001",
+      "strain": "OG Kush",
+      "timestamp": "2025-01-15T11:00:00Z",
+      "camera": "RGB_High_Res",
+      "growth_stage": "Flowering_Week_6",
+      "batch": "F1_Generation"
+    },
+    "sample_plant_003.png": {
+      "plant_id": "F1_001",
+      "strain": "BD_x_OK_Hybrid",
+      "timestamp": "2025-01-15T14:00:00Z",
+      "camera": "RGB_High_Res",
+      "growth_stage": "Flowering_Week_6",
+      "batch": "F1_Generation"
+    }
+  },
+  "camera_specs": {
+    "model": "High Resolution RGB Camera",
+    "resolution": "4000x3000",
+    "color_depth": "24-bit RGB",
+    "calibration_date": "2025-01-01"
+  }
+}
