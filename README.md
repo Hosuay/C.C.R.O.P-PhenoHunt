@@ -80,10 +80,43 @@ This tool:
 - Backcross progressive introgression
 - Genetic variance and stability scoring
 
-✅ **Explainable AI (XAI)**
+✅ **Explainable AI (XAI) & Uncertainty Quantification**
 - Feature importance visualization
 - SHAP values for prediction interpretation
-- Confidence intervals for all outputs
+- Confidence intervals and conformal prediction
+- Reliability diagrams and calibration metrics
+- Brier score and Expected Calibration Error (ECE)
+
+### Interoperability & Data Exchange
+
+✅ **BrAPI v2.1 Compliance**
+- Import/export BrAPI-compliant JSON for Breedbase integration
+- Observation unit format with confidence intervals
+- 9-field metadata schema for reproducibility
+- Command-line and Python API interfaces
+- Full integration with breeding management systems (BMS)
+
+✅ **Containerized Phenomics Pipeline**
+- PhytoOracle-inspired 3-stage pipeline (preprocess → extract → aggregate)
+- Docker-based reproducible environments
+- YAML configuration for flexible workflows
+- High-throughput image analysis for trichome density, bud structure
+- Automated quality control and validation
+
+### Genomic Selection & GWAS
+
+✅ **G-BLUP (Genomic Best Linear Unbiased Prediction)**
+- VanRaden (2008) genomic relationship matrix (GRM)
+- Mixed model equations for breeding value estimation
+- 9-fold cross-validation (sacred geometry aligned)
+- Predictive accuracy metrics (R², correlation, RMSE)
+- Scalable to 10K+ markers
+
+✅ **Genome-Wide Association Studies (GWAS)**
+- PLINK integration with scipy fallback
+- Linear and mixed-model association testing
+- Manhattan plot data preparation
+- MAF filtering and quality control
 
 ### Chemical Profiling
 
@@ -91,12 +124,19 @@ This tool:
 - **9 Cannabinoids**: THC, CBD, CBG, CBC, CBDA, THCV, CBN, Δ8-THC, THCA
 - **11 Terpenes**: Myrcene, Limonene, Pinene, Linalool, Caryophyllene, Humulene, Terpinolene, Ocimene, Camphene, Bisabolol, β-Pinene
 
-✅ **Molecular Descriptors** (Planned)
-- Molecular Weight
-- LogP (Lipophilicity)
+✅ **Molecular Descriptors** (RDKit Integration)
+- Molecular Weight, LogP (Lipophilicity)
 - H-Bond Donors/Acceptors
 - Topological Polar Surface Area (TPSA)
-- Rotatable Bonds
+- Rotatable Bonds, Aromatic Rings
+- 33 primary descriptors (sacred geometry)
+
+✅ **Evidence-Based Effect Mapping**
+- Literature-backed effect coefficients with DOI references
+- 9+ primary literature sources (Russo 2011, Blessing 2015, etc.)
+- Compound-effect association with confidence levels
+- Entourage effect aggregation across multiple compounds
+- Automated evidence report generation
 
 ### Data Processing
 
@@ -113,10 +153,12 @@ This tool:
 - THC:CBD ratio consistency checks
 - Automated quality control reports
 
-✅ **Dataset Versioning**
-- Cryptographic hashing for integrity (Rust module - planned)
-- Metadata tracking (timestamp, source, preprocessing)
-- 27-block partitioning for train/test/validation
+✅ **Dataset Versioning & Experiment Tracking**
+- SHA-256 cryptographic hashing for data integrity
+- 9-field minimum metadata schema (sacred geometry)
+- 27-field extended metadata for full reproducibility
+- Git commit tracking and Docker image versioning
+- Harmonic seed generation from experiment parameters
 
 ### Visualization & Dashboards
 
@@ -141,20 +183,28 @@ This tool:
 ### Sacred Geometry Integration
 
 ✅ **Harmonic Numerology Alignment**
-- **3**: Triadic Input → Transform → Output flow
+- **3**: Triadic Input → Transform → Output flow (BrAPI, Phenomics, Genomics)
 - **5**: 5-stage preprocessing pipeline
 - **7**: 7-layer neural network architectures
-- **9**: 9-step post-processing synthesis
+- **9**: 9-fold cross-validation, 9-field metadata schema
 - **12**: 12-module repository structure
-- **27**: 27 latent partitions (3³)
-- **33**: 33 primary chemical & phenotypic features
-- **369**: Tesla's divine numbers - ultimate epoch count
+- **27**: 27 latent dimensions (3³), 27 feature embeddings
+- **33**: 33 primary molecular descriptors
+- **369**: Tesla's divine numbers - ultimate epoch count and harmonic seed
+
+✅ **Harmonic Seeding System**
+- Deterministic seed generation from experiment parameters
+- SHA-256 hash-based reproducibility (NOT biological causation claims)
+- Sacred number hyperparameter presets (27, 369, 999 epochs)
+- Cosine annealing learning rate with 3-6-9 cycles
+- Full integration with PyTorch, TensorFlow, NumPy
 
 ### Multi-Language Architecture (Planned)
 
 ✅ **Python** (Primary)
 - ML pipelines, data science, visualization
-- Current: 3,055+ lines of scientific code
+- Current: 10,000+ lines of scientific code (v3.0.0)
+- New modules: BrAPI, Phenomics, Genomics, XAI, Uncertainty, Experiments
 
 ✅ **C++** (Planned)
 - High-performance phenotypic analysis
@@ -213,8 +263,25 @@ from src.phenohunter_scientific import create_phenohunter
 ph = create_phenohunter()
 ```
 
-### Docker Installation (Future)
+### Docker Installation
 
+#### NEW v3.0.0: Phenomics Pipeline
+```bash
+# Build phenomics image
+docker build -f docker/phenomics.Dockerfile -t crop-phenohunt/phenomics:latest .
+
+# Run pipeline in container
+docker run --rm \
+  -v $(pwd)/data_examples:/workspace/data_examples \
+  -v $(pwd)/data:/workspace/data \
+  crop-phenohunt/phenomics:latest \
+  python scripts/run_pipeline.py --config pipelines/phenomics_pipeline.yml
+
+# Interactive shell
+docker run -it --rm crop-phenohunt/phenomics:latest /bin/bash
+```
+
+#### Future: Full Platform
 ```bash
 docker pull hosuay/crop-phenohunt:latest
 docker run -p 8050:8050 hosuay/crop-phenohunt
@@ -383,28 +450,60 @@ for strain, similarity in similar_strains:
 C.C.R.O.P-PhenoHunt/
 ├── src/
 │   ├── data/
-│   │   └── validators.py          # Data validation (333 lines)
+│   │   └── validators.py          # Data validation
 │   ├── models/
-│   │   ├── vae.py                 # VAE architecture (408 lines)
-│   │   ├── effect_predictor.py   # Effect prediction (467 lines)
-│   │   └── breeding_strategy.py  # Breeding algorithms (399 lines)
-│   ├── utils/
-│   │   ├── config.py              # Configuration (74 lines)
-│   │   └── visualization.py       # Plotting (460 lines)
-│   ├── tests/
-│   │   └── test_scientific_improvements.py  # Testing (355 lines)
-│   └── phenohunter_scientific.py  # Main API (559 lines)
+│   │   ├── vae.py                 # VAE architecture
+│   │   ├── effect_predictor.py   # Effect prediction
+│   │   └── breeding_strategy.py  # Breeding algorithms
+│   ├── genomics/                  # NEW v3.0.0
+│   │   ├── genomic_selection.py  # G-BLUP & GRM computation
+│   │   └── gwas_wrapper.py       # GWAS with PLINK integration
+│   ├── phenomics/                 # NEW v3.0.0
+│   │   └── feature_extraction.py # Image-based trait extraction
+│   ├── io/                        # NEW v3.0.0
+│   │   └── brapi_adapter.py      # BrAPI v2.1 compliance
+│   ├── cheminformatics/
+│   │   ├── molecular_descriptors.py  # RDKit descriptors
+│   │   └── evidence_mapping.py   # NEW v3.0.0 - Literature DOI mapping
+│   ├── xai/                       # NEW v3.0.0
+│   │   └── shap_utils.py         # SHAP explanations
+│   ├── uncertainty/               # NEW v3.0.0
+│   │   └── calibration.py        # Conformal prediction & calibration
+│   ├── exp/                       # NEW v3.0.0
+│   │   ├── harmonic_seed.py      # Sacred geometry seeding
+│   │   └── experiment_meta.py    # Metadata tracking
+│   ├── visualization/
+│   │   └── molecular_3d.py       # 3D molecular rendering
+│   └── utils/
+│       ├── config.py              # Configuration
+│       └── visualization.py       # Plotting utilities
+├── scripts/                       # NEW v3.0.0
+│   └── run_pipeline.py           # Phenomics pipeline orchestrator
+├── pipelines/                     # NEW v3.0.0
+│   └── phenomics_pipeline.yml    # Pipeline configuration
+├── docker/                        # NEW v3.0.0
+│   └── phenomics.Dockerfile      # Containerized environment
+├── .github/workflows/             # NEW v3.0.0
+│   ├── ci.yml                    # CI/CD pipeline
+│   └── docker-build.yml          # Docker image builds
+├── notebooks/                     # NEW v3.0.0
+│   └── brapi_demo.ipynb          # BrAPI demonstration
+├── tests/
+│   └── test_brapi_adapter.py     # NEW v3.0.0 - BrAPI tests
 ├── configs/
-│   └── scientific_config.yaml     # Scientific configuration
+│   └── scientific_config.yaml    # Scientific configuration
 ├── docs/
-│   ├── ARCHITECTURE.md            # System architecture
-│   ├── CHANGELOG.md               # Version history
+│   ├── ARCHITECTURE.md           # System architecture
+│   ├── CHANGELOG.md              # Version history
+│   ├── RELEASE.md                # NEW v3.0.0 - Release process
 │   └── SOURCES_AND_ACKNOWLEDGEMENTS.md  # Citations
-├── PhenoHunter.ipynb              # Jupyter notebook interface
-├── example_usage.py               # Usage examples
-├── requirements.txt               # Python dependencies
-├── .env.example                   # Environment template
-└── README.md                      # This file
+├── example_release/               # NEW v3.0.0
+│   ├── BENCHMARKS.md             # Performance benchmarks
+│   └── CITATION.cff              # Zenodo citation
+├── PhenoHunter.ipynb             # Jupyter notebook interface
+├── example_usage.py              # Usage examples
+├── requirements.txt              # Python dependencies
+└── README.md                     # This file
 ```
 
 For detailed architecture documentation, see [ARCHITECTURE.md](ARCHITECTURE.md).
@@ -413,8 +512,36 @@ For detailed architecture documentation, see [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Usage
 
-### Command-Line Interface (Future)
+### Command-Line Interface
 
+#### NEW v3.0.0: BrAPI Adapter
+```bash
+# Import BrAPI JSON to CSV
+python -m src.io.brapi_adapter import --in sample.json --out traits.csv
+
+# Export predictions to BrAPI JSON
+python -m src.io.brapi_adapter export --in predictions.csv --out output.json --study-id STUDY_001
+
+# Validate BrAPI JSON
+python -m src.io.brapi_adapter validate data.json
+```
+
+#### NEW v3.0.0: Phenomics Pipeline
+```bash
+# Run full pipeline
+python scripts/run_pipeline.py --config pipelines/phenomics_pipeline.yml
+
+# Dry run validation
+python scripts/run_pipeline.py --config pipelines/phenomics_pipeline.yml --dry-run
+
+# Run specific stage
+python scripts/run_pipeline.py --config pipelines/phenomics_pipeline.yml --stage feature_extract
+
+# Verbose mode
+python scripts/run_pipeline.py --config pipelines/phenomics_pipeline.yml --verbose
+```
+
+#### Future: Main CLI
 ```bash
 # Train models on your dataset
 python -m phenohunt train --data strains.csv --epochs 369

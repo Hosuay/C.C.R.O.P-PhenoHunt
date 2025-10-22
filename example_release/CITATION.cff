@@ -1,0 +1,37 @@
+cff-version: 1.2.0
+message: "If you use C.C.R.O.P-PhenoHunt in your research, please cite it as below."
+title: "C.C.R.O.P-PhenoHunt: Cannabis Computational Research & Optimization Platform"
+version: 3.0.0
+date-released: 2025-01-22
+authors:
+  - family-names: "Hosuay"
+    given-names: ""
+    orcid: ""
+  - name: "C.C.R.O.P-PhenoHunt Contributors"
+repository-code: "https://github.com/Hosuay/C.C.R.O.P-PhenoHunt"
+url: "https://github.com/Hosuay/C.C.R.O.P-PhenoHunt"
+abstract: >
+  C.C.R.O.P-PhenoHunt is a scientifically robust, interoperable,
+  and reproducible research suite for cannabis breeding research.
+  It integrates BrAPI-compliant data exchange, containerized
+  phenomics pipelines, genomic selection (G-BLUP), GWAS,
+  cheminformatics, explainable AI, and uncertainty quantification.
+  The platform incorporates sacred geometry design principles
+  as reproducible experimental conventions (harmonic numerology:
+  3, 6, 9, 27, 33, 369) for deterministic seeding and experimental
+  metadata.
+keywords:
+  - cannabis
+  - breeding
+  - machine-learning
+  - genomic-selection
+  - phenomics
+  - BrAPI
+  - sacred-geometry
+  - reproducible-research
+  - GWAS
+  - cheminformatics
+  - VAE
+  - explainable-AI
+license: MIT
+type: software

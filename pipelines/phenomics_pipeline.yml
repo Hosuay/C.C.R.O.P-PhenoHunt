@@ -1,0 +1,150 @@
+# Phenomics Pipeline Configuration
+# PhytoOracle-inspired containerized pipeline for C.C.R.O.P-PhenoHunt
+#
+# Sacred Geometry Alignment:
+#   - 3 primary stages: preprocess → extract → aggregate
+#   - 9 configurable parameters per stage
+#   - 369-pixel target dimension
+
+version: "1.0.0"
+name: "phenomics_pipeline"
+description: "High-throughput phenotypic trait extraction for cannabis breeding"
+
+# Global configuration (9 sacred parameters)
+global:
+  sacred_geometry_seed: 369
+  target_image_size: [369, 369]
+  color_space: "RGB"
+  log_level: "INFO"
+  output_format: "json"
+  enable_validation: true
+  parallel_workers: 3
+  checkpoint_interval: 9
+  metadata_tracking: true
+
+# Pipeline stages (3 core stages)
+stages:
+  # Stage 1: Preprocessing
+  - name: "preprocess"
+    module: "src.phenomics.preprocessing"
+    enabled: true
+    config:
+      resize_images: true
+      target_size: [369, 369]
+      normalize_intensity: true
+      remove_background: false
+      quality_threshold: 0.7
+      output_dir: "data/processed/images"
+      save_intermediate: true
+      enhance_contrast: true
+      denoise: false
+    outputs:
+      - "processed_images"
+      - "quality_report"
+
+  # Stage 2: Feature Extraction
+  - name: "feature_extract"
+    module: "src.phenomics.feature_extraction"
+    enabled: true
+    depends_on: ["preprocess"]
+    config:
+      extract_color: true
+      extract_texture: true
+      extract_shape: true
+      trichome_detection: true
+      bud_analysis: true
+      leaf_morphology: true
+      output_file: "data/results/features.json"
+      feature_dimension: 27  # Sacred 3³
+      save_visualizations: true
+    outputs:
+      - "features"
+      - "feature_visualizations"
+
+  # Stage 3: Aggregation & Statistics
+  - name: "aggregate"
+    module: "src.phenomics.aggregation"
+    enabled: true
+    depends_on: ["feature_extract"]
+    config:
+      aggregation_method: "mean"  # mean, median, or percentile
+      calculate_statistics: true
+      outlier_detection: true
+      outlier_threshold: 3.0  # Z-score threshold
+      group_by: "plant_id"
+      output_file: "data/results/aggregated_traits.csv"
+      generate_summary_plots: true
+      harmonic_binning: true  # Use 3, 9, 27 bins for histograms
+      confidence_intervals: true
+    outputs:
+      - "aggregated_traits"
+      - "statistics_summary"
+      - "summary_plots"
+
+# Input specification
+inputs:
+  type: "directory"
+  path: "data_examples/images"
+  pattern: "*.png,*.jpg,*.jpeg"
+  required_metadata: ["plant_id", "timestamp"]
+  metadata_file: "data_examples/images/metadata.json"
+
+# Output specification
+outputs:
+  base_dir: "data/results"
+  subdirs:
+    processed: "processed"
+    features: "features"
+    aggregated: "aggregated"
+    visualizations: "visualizations"
+  formats:
+    features: "json"
+    aggregated: "csv"
+    visualizations: "png"
+  preserve_intermediate: true
+  compression: false
+
+# Validation rules
+validation:
+  check_image_quality: true
+  min_image_size: [100, 100]
+  max_image_size: [5000, 5000]
+  allowed_formats: [".png", ".jpg", ".jpeg", ".tif"]
+  check_metadata: true
+  fail_on_error: false
+
+# Performance settings
+performance:
+  batch_size: 9  # Sacred number
+  parallel_extraction: true
+  max_workers: 3  # Sacred number
+  memory_limit: "4GB"
+  use_gpu: false
+  cache_enabled: true
+
+# Logging
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/phenomics_pipeline.log"
+  console: true
+
+# Docker configuration
+docker:
+  image: "crop-phenohunt/phenomics:latest"
+  base_image: "python:3.11-slim"
+  working_dir: "/workspace"
+  mount_points:
+    - "data_examples:/workspace/data_examples"
+    - "data:/workspace/data"
+  environment:
+    SACRED_SEED: "369"
+    PYTHONPATH: "/workspace"
+
+# Sacred geometry harmonics
+harmonics:
+  epoch_checkpoints: [3, 9, 27, 81]
+  feature_dimensions: 27
+  color_palette_size: 9
+  aggregation_bins: [3, 9, 27]
+  numerology_seed: 369

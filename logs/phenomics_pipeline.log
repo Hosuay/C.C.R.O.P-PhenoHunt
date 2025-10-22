@@ -1,0 +1,14 @@
+2025-10-22 22:11:47,108 - PhenomicsPipeline - INFO - ============================================================
+2025-10-22 22:11:47,109 - PhenomicsPipeline - INFO - Phenomics Pipeline Started
+2025-10-22 22:11:47,109 - PhenomicsPipeline - INFO - ============================================================
+2025-10-22 22:11:47,109 - PhenomicsPipeline - INFO - Config: pipelines/phenomics_pipeline.yml
+2025-10-22 22:11:47,109 - PhenomicsPipeline - INFO - Sacred Geometry Seed: 369
+2025-10-22 22:11:47,109 - PhenomicsPipeline - INFO - DRY RUN MODE - Validation only
+2025-10-22 22:11:47,109 - PhenomicsPipeline - INFO - 
+🔍 Validating configuration...
+2025-10-22 22:11:47,109 - PhenomicsPipeline - INFO -   ✓ Stage: preprocess
+2025-10-22 22:11:47,109 - PhenomicsPipeline - INFO -   ✓ Stage: feature_extract
+2025-10-22 22:11:47,109 - PhenomicsPipeline - INFO -   ✓ Stage: aggregate
+2025-10-22 22:11:47,109 - PhenomicsPipeline - INFO -   ✓ Input path: data_examples/images
+2025-10-22 22:11:47,109 - PhenomicsPipeline - INFO - 
+✅ Configuration is valid!

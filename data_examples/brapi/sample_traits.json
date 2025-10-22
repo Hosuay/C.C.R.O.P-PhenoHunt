@@ -1,0 +1,120 @@
+{
+  "metadata": {
+    "pagination": {
+      "pageSize": 3,
+      "currentPage": 0,
+      "totalCount": 3,
+      "totalPages": 1
+    },
+    "status": [],
+    "datafiles": []
+  },
+  "result": {
+    "data": [
+      {
+        "observationUnitDbId": "PLANT_BD_001",
+        "observationUnitName": "Blue Dream - Plant 001",
+        "observationLevel": "plant",
+        "studyDbId": "STUDY_2025_CANNABIS_TRIAL",
+        "observations": [
+          {
+            "observationDbId": "OBS_BD_001_THC",
+            "observationVariableDbId": "THC",
+            "observationVariableName": "THC_content",
+            "value": "22.5",
+            "observationUnit": "%",
+            "observationTimeStamp": "2025-01-15T10:30:00Z",
+            "collector": "Lab Technician A",
+            "season": "2025 Winter"
+          },
+          {
+            "observationDbId": "OBS_BD_001_CBD",
+            "observationVariableDbId": "CBD",
+            "observationVariableName": "CBD_content",
+            "value": "1.2",
+            "observationUnit": "%",
+            "observationTimeStamp": "2025-01-15T10:30:00Z",
+            "collector": "Lab Technician A",
+            "season": "2025 Winter"
+          },
+          {
+            "observationDbId": "OBS_BD_001_MYR",
+            "observationVariableDbId": "Myrcene",
+            "observationVariableName": "Myrcene_content",
+            "value": "0.65",
+            "observationUnit": "%",
+            "observationTimeStamp": "2025-01-15T10:30:00Z",
+            "collector": "Lab Technician A",
+            "season": "2025 Winter"
+          }
+        ]
+      },
+      {
+        "observationUnitDbId": "PLANT_OK_001",
+        "observationUnitName": "OG Kush - Plant 001",
+        "observationLevel": "plant",
+        "studyDbId": "STUDY_2025_CANNABIS_TRIAL",
+        "observations": [
+          {
+            "observationDbId": "OBS_OK_001_THC",
+            "observationVariableDbId": "THC",
+            "observationVariableName": "THC_content",
+            "value": "24.8",
+            "observationUnit": "%",
+            "observationTimeStamp": "2025-01-15T11:00:00Z",
+            "collector": "Lab Technician B",
+            "season": "2025 Winter"
+          },
+          {
+            "observationDbId": "OBS_OK_001_CBD",
+            "observationVariableDbId": "CBD",
+            "observationVariableName": "CBD_content",
+            "value": "0.3",
+            "observationUnit": "%",
+            "observationTimeStamp": "2025-01-15T11:00:00Z",
+            "collector": "Lab Technician B",
+            "season": "2025 Winter"
+          },
+          {
+            "observationDbId": "OBS_OK_001_LIM",
+            "observationVariableDbId": "Limonene",
+            "observationVariableName": "Limonene_content",
+            "value": "0.42",
+            "observationUnit": "%",
+            "observationTimeStamp": "2025-01-15T11:00:00Z",
+            "collector": "Lab Technician B",
+            "season": "2025 Winter"
+          }
+        ]
+      },
+      {
+        "observationUnitDbId": "PLANT_F1_001",
+        "observationUnitName": "F1 Hybrid BD x OK - Plant 001",
+        "observationLevel": "plant",
+        "studyDbId": "STUDY_2025_CANNABIS_TRIAL",
+        "observations": [
+          {
+            "observationDbId": "OBS_F1_001_THC",
+            "observationVariableDbId": "THC",
+            "observationVariableName": "THC_content",
+            "value": "23.4",
+            "observationUnit": "%",
+            "observationTimeStamp": "2025-01-15T14:00:00Z",
+            "collector": "Lab Technician C",
+            "season": "2025 Winter"
+          },
+          {
+            "observationDbId": "OBS_F1_001_CBD",
+            "observationVariableDbId": "CBD",
+            "observationVariableName": "CBD_content",
+            "value": "0.8",
+            "observationUnit": "%",
+            "observationTimeStamp": "2025-01-15T14:00:00Z",
+            "collector": "Lab Technician C",
+            "season": "2025 Winter"
+          }
+        ]
+      }
+    ]
+  }
+}
