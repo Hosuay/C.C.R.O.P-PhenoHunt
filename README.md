@@ -1,12 +1,16 @@
 # C.C.R.O.P-PhenoHunt
 ## Cannabis Computational Research & Optimization Platform
 ### Pheno-Hunting with Machine Learning & Sacred Geometry
+#### **Now with Professional CLI Interface!** 🚀
 
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-ee4c2c.svg)](https://pytorch.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Version](https://img.shields.io/badge/version-3.0.0-green.svg)](CHANGELOG.md)
 [![Sacred Geometry](https://img.shields.io/badge/alignment-369-purple.svg)](ARCHITECTURE.md#sacred-geometry-integration)
+[![CLI](https://img.shields.io/badge/interface-CLI-brightgreen.svg)](MIGRATION_GUIDE.md)
+
+> **⚠️ IMPORTANT:** As of v3.0.0, PhenoHunt is now primarily a **CLI application**. The Jupyter notebook interface is **deprecated**. See [Migration Guide](MIGRATION_GUIDE.md) for details.
 
 ---
 
@@ -231,7 +235,7 @@ This tool:
 - pip package manager
 - (Optional) CUDA for GPU acceleration
 
-### Standard Installation
+### CLI Installation (Recommended)
 
 ```bash
 # Clone the repository
@@ -242,25 +246,31 @@ cd C.C.R.O.P-PhenoHunt
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Install dependencies
-pip install -r requirements.txt
+# Install as a package
+pip install -e .
 
-# Set up environment variables
-cp .env.example .env
-# Edit .env with your configuration
+# Verify installation
+phenohunt --version
 ```
 
-### Google Colab Installation
+### Alternative: Python API Installation
 
-```python
-# In a Colab notebook cell
-!git clone https://github.com/Hosuay/C.C.R.O.P-PhenoHunt.git
-%cd C.C.R.O.P-PhenoHunt
-!pip install -r requirements.txt
+If you want to use PhenoHunt programmatically in your own scripts:
 
-# Import and use
+```bash
+# Install dependencies only
+pip install -r requirements.txt
+
+# Import in your Python code
 from src.phenohunter_scientific import create_phenohunter
 ph = create_phenohunter()
+```
+
+### For Development
+
+```bash
+# Install with development dependencies
+pip install -e ".[dev]"
 ```
 
 ### Docker Installation
@@ -291,7 +301,39 @@ docker run -p 8050:8050 hosuay/crop-phenohunt
 
 ## Quick Start
 
-### Example 1: Load Data and Train Models
+### CLI Quick Start (Recommended)
+
+```bash
+# 1. Create sample data
+python examples/create_sample_data.py
+
+# 2. Train models on your strain database
+phenohunt train --data examples/sample_strains.csv --epochs 369
+
+# 3. Generate F1 hybrid between two parents
+phenohunt cross \
+    --data examples/sample_strains.csv \
+    --parent1 "Blue Dream" \
+    --parent2 "OG Kush" \
+    --ratio 0.6 \
+    --output f1_hybrid.csv
+
+# 4. Generate F2 population
+phenohunt f2 \
+    --data examples/sample_strains.csv \
+    --parent1 "Blue Dream" \
+    --parent2 "OG Kush" \
+    --count 10 \
+    --trait "Analgesic" \
+    --output f2_population.csv
+
+# 5. Run complete example workflow
+bash examples/example_cli_workflow.sh
+```
+
+### Python API Quick Start
+
+If you prefer programmatic access:
 
 ```python
 from src.phenohunter_scientific import create_phenohunter
@@ -307,16 +349,6 @@ warnings = ph.load_strain_database(strain_data, validate=True)
 # Train VAE model (369 epochs - harmonic alignment)
 vae_history = ph.train_vae(epochs=369, verbose=True)
 
-# Train effect prediction models
-effect_metrics = ph.train_effect_predictors(auto_generate_targets=True)
-
-# Print training summary
-print(ph.get_summary_report())
-```
-
-### Example 2: Generate F1 Hybrid Strain
-
-```python
 # Generate F1 hybrid between two parent strains
 f1_result = ph.generate_f1_hybrid(
     parent1_name='Blue Dream',
@@ -325,18 +357,9 @@ f1_result = ph.generate_f1_hybrid(
     n_samples=100        # Monte Carlo samples for uncertainty
 )
 
-# Visualize the hybrid with uncertainty bands
-ph.visualize_breeding_result(f1_result, show_uncertainty=True)
-
-# Print chemical profile
-print(f"Offspring Chemical Profile:")
-for compound, value in f1_result['chemical_profile'].items():
-    print(f"  {compound}: {value['mean']:.2f} ± {value['std']:.2f}")
-
-# Print effect predictions
-print(f"\nPredicted Effects:")
-for effect, prob in f1_result['effects'].items():
-    print(f"  {effect}: {prob:.1%} confidence")
+# Print results
+print(f"Stability Score: {f1_result.stability_score:.3f}")
+print(f"Heterosis Score: {f1_result.heterosis_score:.3f}")
 ```
 
 ### Example 3: Generate F2 Population
@@ -512,67 +535,86 @@ For detailed architecture documentation, see [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Usage
 
-### Command-Line Interface
+### Command-Line Interface (Primary)
 
-#### NEW v3.0.0: BrAPI Adapter
+#### Main CLI Commands
+
 ```bash
-# Import BrAPI JSON to CSV
-python -m src.io.brapi_adapter import --in sample.json --out traits.csv
+# Get help
+phenohunt --help
+phenohunt train --help
+phenohunt cross --help
 
-# Export predictions to BrAPI JSON
-python -m src.io.brapi_adapter export --in predictions.csv --out output.json --study-id STUDY_001
-
-# Validate BrAPI JSON
-python -m src.io.brapi_adapter validate data.json
-```
-
-#### NEW v3.0.0: Phenomics Pipeline
-```bash
-# Run full pipeline
-python scripts/run_pipeline.py --config pipelines/phenomics_pipeline.yml
-
-# Dry run validation
-python scripts/run_pipeline.py --config pipelines/phenomics_pipeline.yml --dry-run
-
-# Run specific stage
-python scripts/run_pipeline.py --config pipelines/phenomics_pipeline.yml --stage feature_extract
-
-# Verbose mode
-python scripts/run_pipeline.py --config pipelines/phenomics_pipeline.yml --verbose
-```
-
-#### Future: Main CLI
-```bash
 # Train models on your dataset
-python -m phenohunt train --data strains.csv --epochs 369
+phenohunt train --data strains.csv --epochs 369 --verbose
 
 # Generate F1 hybrid
-python -m phenohunt hybrid \
+phenohunt cross \
+    --data strains.csv \
     --parent1 "Blue Dream" \
     --parent2 "OG Kush" \
     --ratio 0.6 \
-    --output f1_hybrid.json
+    --output f1_hybrid.csv \
+    --visualize
 
-# Launch interactive dashboard
-python -m phenohunt dashboard --port 8050
+# Generate F2 population
+phenohunt f2 \
+    --data strains.csv \
+    --parent1 "Blue Dream" \
+    --parent2 "OG Kush" \
+    --count 20 \
+    --trait "Analgesic" \
+    --output f2_population.csv
 
-# Export results
-python -m phenohunt export --format csv --output results.csv
+# Generate backcross
+phenohunt backcross \
+    --data strains.csv \
+    --parent1 "Blue Dream" \
+    --parent2 "OG Kush" \
+    --backcross-to "Blue Dream" \
+    --generation 1 \
+    --output bx1.csv
+
+# Analyze strains
+phenohunt analyze \
+    --data strains.csv \
+    --strains "Blue Dream" "OG Kush" "Sour Diesel"
+
+# Import data
+phenohunt import \
+    --file lab_results.csv \
+    --output processed_strains.csv
 ```
 
-### Jupyter Notebook
+#### Module-Specific Commands
 
-Open `PhenoHunter.ipynb` and follow the interactive workflow:
+```bash
+# BrAPI Adapter
+python -m src.io.brapi_adapter import --in sample.json --out traits.csv
+python -m src.io.brapi_adapter export --in predictions.csv --out output.json --study-id STUDY_001
+python -m src.io.brapi_adapter validate data.json
 
-1. **Data Loading**: Import strain database
-2. **Model Training**: Train VAE and effect predictors
-3. **Strain Generation**: Create F1, F2, backcross hybrids
-4. **Visualization**: Interactive plots and 3D molecules
-5. **Export**: Save results in multiple formats
+# Phenomics Pipeline
+python scripts/run_pipeline.py --config pipelines/phenomics_pipeline.yml
+python scripts/run_pipeline.py --config pipelines/phenomics_pipeline.yml --stage feature_extract
+```
 
 ### Python API
 
-See [example_usage.py](example_usage.py) for comprehensive examples.
+For programmatic access, see [example_usage.py](example_usage.py):
+
+```python
+from src.phenohunter_scientific import create_phenohunter
+
+ph = create_phenohunter()
+# Use all the same methods as before
+```
+
+### Jupyter Notebook (Deprecated)
+
+⚠️ **The Jupyter notebook interface is deprecated.** See [JUPYTER_DEPRECATED.md](JUPYTER_DEPRECATED.md) and [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md) for details.
+
+If you need notebook-style workflows, you can create your own notebooks using the Python API.
 
 ### REST API (Future)
 
