@@ -67,9 +67,10 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "phenohunt=phenohunt_cli:main",
+            "phenohunt=phenohunt:main",
         ],
     },
+    scripts=["phenohunt"],
     include_package_data=True,
     package_data={
         "": ["configs/*.yaml", "configs/*.json"],

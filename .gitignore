@@ -137,15 +137,27 @@ Thumbs.db
 # Ignore data files but not src/data package
 /data/
 data_examples/*.csv
+data_examples/*.json
 *.h5
 *.hdf5
 *.pkl
 *.pickle
+
 # Ignore CSV/JSON except in specific dirs
 /*.csv
 /*.json
 !configs/*.json
 !configs/*.yaml
+!examples/sample_strains.csv
+
+# Generated outputs
+scientific_breeding_results.csv
+pheno_results_*.csv
+f1_*.csv
+f2_*.csv
+bx*.csv
+*_hybrid.csv
+*_population.csv
 
 # Temporary files
 tmp/

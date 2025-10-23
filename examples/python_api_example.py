@@ -1,6 +1,6 @@
 """
-PhenoHunter Scientific Edition - Usage Example
-Demonstrates the improved scientific features
+PhenoHunter Scientific Edition - Python API Usage Example
+Demonstrates the Python API for programmatic access
 """
 
 import sys
@@ -9,7 +9,8 @@ import pandas as pd
 import numpy as np
 
 # Add src to path
-sys.path.insert(0, str(Path(__file__).parent / 'src'))
+src_path = Path(__file__).parent.parent / 'src'
+sys.path.insert(0, str(src_path))
 
 from phenohunter_scientific import create_phenohunter
 
