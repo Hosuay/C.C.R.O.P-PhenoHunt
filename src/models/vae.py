@@ -320,13 +320,14 @@ class VAETrainer:
             lr=learning_rate,
             weight_decay=weight_decay
         )
+        # PyTorch 2.0+ compatible - verbose parameter removed
         self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
             self.optimizer,
             mode='min',
             factor=0.5,
-            patience=20,
-            verbose=True
+            patience=20
         )
+        logger.info("Initialized ReduceLROnPlateau scheduler (patience=20)")
         self.history = {
             'train_loss': [],
             'recon_loss': [],
