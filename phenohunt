@@ -1,93 +1,129 @@
 #!/usr/bin/env python3
 """
-PhenoHunter CLI - Command-line interface for cannabis breeding optimization.
+PhenoHunter CLI - Enhanced command-line interface for cannabis breeding optimization.
 
-This replaces the Jupyter notebook interface with a proper CLI application.
+Professional CLI with colors, progress bars, and improved user experience.
 """
 
 import argparse
 import sys
 from pathlib import Path
+import os
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent / 'src'))
 
 from src.phenohunter_scientific import create_phenohunter
+from src.cli_utils import (
+    Colors, print_header, print_success, print_error, print_warning,
+    print_info, print_section, print_table_row, format_chemical,
+    format_metric, print_banner, ProgressBar
+)
+from src.__version__ import __version__, VERSION_INFO
 import pandas as pd
 import numpy as np
-import logging
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
 
 
 def cmd_train(args):
     """Train models on a strain database."""
-    logger.info(f"Loading strain database from {args.data}")
+    print_banner()
+    print_header("TRAINING MODELS")
 
+    # Load data
+    print_info(f"Loading strain database from {args.data}")
     try:
         df = pd.read_csv(args.data)
+        print_success(f"Loaded {len(df)} strains with {len(df.columns)} features")
+    except FileNotFoundError:
+        print_error(f"File not found: {args.data}")
+        return 1
     except Exception as e:
-        logger.error(f"Failed to load data: {e}")
+        print_error(f"Failed to load data: {e}")
         return 1
 
-    ph = create_phenohunter(args.config)
+    # Initialize PhenoHunter
+    print_info("Initializing PhenoHunter...")
+    try:
+        ph = create_phenohunter(args.config)
+    except Exception as e:
+        print_error(f"Failed to initialize: {e}")
+        return 1
 
-    logger.info(f"Loaded {len(df)} strains")
+    # Load and validate
+    print_info("Validating strain database...")
     warnings = ph.load_strain_database(df, validate=not args.no_validate)
 
-    if args.show_warnings and warnings:
-        logger.warning("Validation warnings detected:")
+    if warnings and args.show_warnings:
+        print_warning("Validation warnings detected:")
         for category, warning_list in warnings.items():
             for warning in warning_list[:5]:
-                logger.warning(f"[{category}] {warning}")
+                print(f"  {Colors.DIM}[{category}]{Colors.RESET} {warning}")
 
     # Train VAE
-    logger.info(f"Training VAE for {args.epochs} epochs...")
+    print_section(f"Training VAE ({args.epochs} epochs)")
     history = ph.train_vae(epochs=args.epochs, verbose=args.verbose)
-    logger.info(f"VAE training complete. Final loss: {history['train_loss'][-1]:.4f}")
+    print_success(f"VAE training complete. Final loss: {history['train_loss'][-1]:.4f}")
 
     # Train effect predictors
     if not args.skip_effects:
-        logger.info("Training effect predictors...")
+        print_section("Training Effect Predictors")
         metrics = ph.train_effect_predictors(auto_generate_targets=True)
-        logger.info(f"Trained {len(metrics)} effect predictors")
+        print_success(f"Trained {len(metrics)} effect predictors")
 
-    # Save model if requested
+    # Save model
     if args.save:
+        print_info(f"Saving model to {args.save}")
         import torch
         torch.save(ph.vae.state_dict(), args.save)
-        logger.info(f"Model saved to {args.save}")
+        print_success(f"Model saved successfully")
 
     # Print summary
-    print("\n" + ph.get_summary_report())
+    print_section("Training Summary")
+    print(ph.get_summary_report())
 
     return 0
 
 
 def cmd_cross(args):
     """Generate a hybrid cross between two parents."""
-    logger.info(f"Loading strain database from {args.data}")
+    print_banner()
+    print_header("GENERATING F1 HYBRID")
 
+    # Load data
+    print_info(f"Loading strain database from {args.data}")
     try:
         df = pd.read_csv(args.data)
+        print_success(f"Loaded {len(df)} strains")
     except Exception as e:
-        logger.error(f"Failed to load data: {e}")
+        print_error(f"Failed to load data: {e}")
         return 1
 
+    # Validate parents exist
+    if args.parent1 not in df['strain_name'].values:
+        print_error(f"Parent '{args.parent1}' not found in database")
+        return 1
+    if args.parent2 not in df['strain_name'].values:
+        print_error(f"Parent '{args.parent2}' not found in database")
+        return 1
+
+    # Initialize and train
+    print_info("Initializing PhenoHunter...")
     ph = create_phenohunter(args.config)
     ph.load_strain_database(df, validate=False)
 
-    # Train models
-    logger.info("Training models...")
-    ph.train_vae(epochs=args.epochs, verbose=False)
-    ph.train_effect_predictors(auto_generate_targets=True)
+    print_info(f"Training models ({args.epochs} epochs)...")
+    with ProgressBar(args.epochs, "Training") as pbar:
+        ph.train_vae(epochs=args.epochs, verbose=False)
+        pbar.update(args.epochs)
 
-    # Generate F1 hybrid
-    logger.info(f"Generating F1 hybrid: {args.parent1} × {args.parent2}")
+    ph.train_effect_predictors(auto_generate_targets=True)
+    print_success("Models trained")
+
+    # Generate F1
+    print_section("Generating F1 Hybrid")
+    print_info(f"Parents: {Colors.CYAN}{args.parent1}{Colors.RESET} × {Colors.CYAN}{args.parent2}{Colors.RESET}")
+    print_info(f"Contribution ratio: {args.ratio:.0%} / {1-args.ratio:.0%}")
+
     try:
         f1_result = ph.generate_f1_hybrid(
             parent1_name=args.parent1,
@@ -96,67 +132,77 @@ def cmd_cross(args):
             n_samples=args.samples
         )
     except Exception as e:
-        logger.error(f"Failed to generate hybrid: {e}")
+        print_error(f"Failed to generate hybrid: {e}")
         return 1
 
     # Print results
-    print(f"\n{'='*70}")
-    print(f"F1 HYBRID RESULTS")
-    print(f"{'='*70}")
-    print(f"Parents: {args.parent1} ({args.ratio:.0%}) × {args.parent2} ({1-args.ratio:.0%})")
-    print(f"Stability Score: {f1_result.stability_score:.3f}")
-    print(f"Heterosis Score: {f1_result.heterosis_score:.3f}")
+    print_section("F1 Hybrid Results")
+    print_table_row("Stability Score", f"{f1_result.stability_score:.3f}")
+    print_table_row("Heterosis Score", f"{f1_result.heterosis_score:.3f}")
 
-    print(f"\nChemical Profile:")
+    print_section("Chemical Profile")
     feature_names = ph.feature_columns
-    for i, feat in enumerate(feature_names):
+    for i, feat in enumerate(feature_names[:10]):  # Show first 10
         mean = f1_result.offspring_profile[i]
         std = f1_result.offspring_std[i]
-        print(f"  {feat:<20}: {mean:6.2f} ± {std:4.2f}")
+        print(f"  {format_chemical(feat, mean, std)}")
+
+    if len(feature_names) > 10:
+        print(f"  {Colors.DIM}... and {len(feature_names) - 10} more{Colors.RESET}")
 
     if f1_result.predicted_effects:
-        print(f"\nPredicted Effects:")
+        print_section("Predicted Effects")
         sorted_effects = sorted(
             f1_result.predicted_effects.items(),
             key=lambda x: x[1],
             reverse=True
         )
         for effect, prob in sorted_effects:
-            print(f"  {effect:<20}: {prob:6.1%}")
+            bar_length = int(prob * 30)
+            bar = "█" * bar_length + "░" * (30 - bar_length)
+            print(f"  {Colors.CYAN}{effect:<20}{Colors.RESET}: {prob:6.1%} [{bar}]")
 
     # Save if requested
     if args.output:
         ph.export_results([f1_result], args.output)
-        logger.info(f"Results saved to {args.output}")
+        print_success(f"Results saved to {args.output}")
 
-    # Generate visualization
+    # Visualize
     if args.visualize:
-        logger.info("Generating visualization...")
-        ph.visualize_breeding_result(f1_result, show_uncertainty=True)
+        print_info("Generating visualization...")
+        try:
+            ph.visualize_breeding_result(f1_result, show_uncertainty=True)
+            print_success("Visualization complete")
+        except Exception as e:
+            print_warning(f"Visualization failed: {e}")
 
     return 0
 
 
 def cmd_f2(args):
     """Generate an F2 population from parents."""
-    logger.info(f"Loading strain database from {args.data}")
+    print_banner()
+    print_header("GENERATING F2 POPULATION")
 
+    # Load data
+    print_info(f"Loading strain database from {args.data}")
     try:
         df = pd.read_csv(args.data)
+        print_success(f"Loaded {len(df)} strains")
     except Exception as e:
-        logger.error(f"Failed to load data: {e}")
+        print_error(f"Failed to load data: {e}")
         return 1
 
+    # Initialize and train
+    print_info("Initializing and training models...")
     ph = create_phenohunter(args.config)
     ph.load_strain_database(df, validate=False)
-
-    # Train models
-    logger.info("Training models...")
     ph.train_vae(epochs=args.epochs, verbose=False)
     ph.train_effect_predictors(auto_generate_targets=True)
+    print_success("Models trained")
 
-    # Generate F1 first
-    logger.info(f"Generating F1: {args.parent1} × {args.parent2}")
+    # Generate F1
+    print_info("Generating F1 parent...")
     f1_result = ph.generate_f1_hybrid(
         parent1_name=args.parent1,
         parent2_name=args.parent2,
@@ -164,61 +210,57 @@ def cmd_f2(args):
         n_samples=100
     )
 
-    # Generate F2 population
-    logger.info(f"Generating F2 population with {args.count} offspring")
+    # Generate F2
+    print_section(f"Generating F2 Population ({args.count} offspring)")
     f2_population = ph.generate_f2_population(f1_result, n_offspring=args.count)
 
-    # Print results
-    print(f"\n{'='*70}")
-    print(f"F2 POPULATION RESULTS")
-    print(f"{'='*70}")
-    print(f"Parents: {args.parent1} × {args.parent2}")
-    print(f"F2 Population Size: {len(f2_population)}")
-    print(f"Avg Stability: {np.mean([r.stability_score for r in f2_population]):.3f}")
+    print_success(f"Generated {len(f2_population)} F2 offspring")
+    avg_stability = np.mean([r.stability_score for r in f2_population])
+    print_table_row("Average Stability", f"{avg_stability:.3f}")
 
-    # Sort by target trait if specified
+    # Rank by trait
     if args.trait:
-        logger.info(f"Ranking by {args.trait} effect...")
+        print_section(f"Top 5 Candidates for {args.trait}")
         sorted_pop = sorted(
             f2_population,
             key=lambda x: x.predicted_effects.get(args.trait, 0),
             reverse=True
         )
 
-        print(f"\nTop 5 candidates for {args.trait}:")
-        print("-"*70)
         for i, result in enumerate(sorted_pop[:5], 1):
             score = result.predicted_effects.get(args.trait, 0)
-            print(f"{i}. Stability: {result.stability_score:.3f}, {args.trait}: {score:.1%}")
+            print(f"  {Colors.BOLD}{i}.{Colors.RESET} Stability: {result.stability_score:.3f}, {args.trait}: {score:.1%}")
 
-    # Save if requested
+    # Save
     if args.output:
         ph.export_results(f2_population, args.output)
-        logger.info(f"Results saved to {args.output}")
+        print_success(f"Results saved to {args.output}")
 
     return 0
 
 
 def cmd_backcross(args):
     """Generate backcross offspring."""
-    logger.info(f"Loading strain database from {args.data}")
+    print_banner()
+    print_header(f"GENERATING BACKCROSS (BX{args.generation})")
 
+    # Load data
+    print_info(f"Loading strain database from {args.data}")
     try:
         df = pd.read_csv(args.data)
     except Exception as e:
-        logger.error(f"Failed to load data: {e}")
+        print_error(f"Failed to load data: {e}")
         return 1
 
+    # Initialize and train
     ph = create_phenohunter(args.config)
     ph.load_strain_database(df, validate=False)
-
-    # Train models
-    logger.info("Training models...")
+    print_info("Training models...")
     ph.train_vae(epochs=args.epochs, verbose=False)
     ph.train_effect_predictors(auto_generate_targets=True)
 
-    # Generate F1 first
-    logger.info(f"Generating F1: {args.parent1} × {args.parent2}")
+    # Generate F1
+    print_info("Generating F1...")
     f1_result = ph.generate_f1_hybrid(
         parent1_name=args.parent1,
         parent2_name=args.parent2,
@@ -227,7 +269,7 @@ def cmd_backcross(args):
     )
 
     # Generate backcross
-    logger.info(f"Backcrossing to {args.backcross_to} (BX{args.generation})")
+    print_info(f"Backcrossing to {args.backcross_to}...")
     bx_result = ph.backcross(
         f1_result,
         parent_name=args.backcross_to,
@@ -235,92 +277,61 @@ def cmd_backcross(args):
     )
 
     # Print results
-    print(f"\n{'='*70}")
-    print(f"BACKCROSS RESULTS (BX{args.generation})")
-    print(f"{'='*70}")
-    print(f"F1: {args.parent1} × {args.parent2}")
-    print(f"Backcrossed to: {args.backcross_to}")
-    print(f"Stability Score: {bx_result.stability_score:.3f}")
-    print(f"Parent Contribution: {bx_result.parent1_weight:.1%}")
+    print_section(f"BX{args.generation} Results")
+    print_table_row("F1 Parents", f"{args.parent1} × {args.parent2}")
+    print_table_row("Backcrossed to", args.backcross_to)
+    print_table_row("Stability Score", f"{bx_result.stability_score:.3f}")
+    print_table_row("Parent Contribution", f"{bx_result.parent1_weight:.1%}")
 
-    # Save if requested
+    # Save
     if args.output:
         ph.export_results([bx_result], args.output)
-        logger.info(f"Results saved to {args.output}")
+        print_success(f"Results saved to {args.output}")
 
     return 0
 
 
 def cmd_analyze(args):
     """Analyze a strain or compare multiple strains."""
-    logger.info(f"Loading strain database from {args.data}")
+    print_banner()
+    print_header("STRAIN ANALYSIS")
 
+    # Load data
     try:
         df = pd.read_csv(args.data)
     except Exception as e:
-        logger.error(f"Failed to load data: {e}")
+        print_error(f"Failed to load data: {e}")
         return 1
 
     ph = create_phenohunter(args.config)
     ph.load_strain_database(df, validate=False)
 
-    # Train effect predictors
-    logger.info("Training effect predictors...")
-    ph.train_effect_predictors(auto_generate_targets=True)
-
     for strain_name in args.strains:
         if strain_name not in df['strain_name'].values:
-            logger.warning(f"Strain '{strain_name}' not found in database")
+            print_warning(f"Strain '{strain_name}' not found in database")
             continue
 
         strain_data = df[df['strain_name'] == strain_name].iloc[0]
 
-        print(f"\n{'='*70}")
-        print(f"STRAIN ANALYSIS: {strain_name}")
-        print(f"{'='*70}")
-        print(f"Type: {strain_data.get('type', 'Unknown')}")
+        print_section(f"Strain: {strain_name}")
+        print_table_row("Type", strain_data.get('type', 'Unknown'))
 
-        print(f"\nChemical Profile:")
+        print(f"\n  {Colors.BOLD}Chemical Profile:{Colors.RESET}")
         for feat in ph.feature_columns:
-            if feat in strain_data:
-                print(f"  {feat:<20}: {strain_data[feat]:6.2f}%")
-
-        # Predict effects
-        profile = {feat: strain_data[feat] for feat in ph.feature_columns if feat in strain_data}
-
-        # This would require implementing a predict_effects method
-        # For now, just show the profile
+            if feat in strain_data and strain_data[feat] > 0:
+                print(f"    {format_chemical(feat, strain_data[feat], unit='%')}")
 
     return 0
 
 
-def cmd_import(args):
-    """Import strain data from various formats."""
-    logger.info(f"Importing from {args.file}")
-
-    try:
-        if args.file.endswith('.csv'):
-            df = pd.read_csv(args.file)
-        elif args.file.endswith('.json'):
-            df = pd.read_json(args.file)
-        else:
-            logger.error(f"Unsupported file format: {args.file}")
-            return 1
-
-        logger.info(f"Loaded {len(df)} strains")
-        print(f"\nColumns: {', '.join(df.columns)}")
-        print(f"\nFirst few rows:")
-        print(df.head())
-
-        # Save to output if specified
-        if args.output:
-            df.to_csv(args.output, index=False)
-            logger.info(f"Saved to {args.output}")
-
-    except Exception as e:
-        logger.error(f"Failed to import: {e}")
-        return 1
-
+def cmd_version(args):
+    """Print version information."""
+    print_banner()
+    print(f"{Colors.BOLD}PhenoHunter{Colors.RESET} version {Colors.GREEN}{__version__}{Colors.RESET}")
+    print()
+    for key, value in VERSION_INFO.items():
+        if key != 'version':
+            print_table_row(key.title(), value)
     return 0
 
 
@@ -329,29 +340,27 @@ def main():
     parser = argparse.ArgumentParser(
         description='PhenoHunter - Cannabis Breeding Optimization CLI',
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  # Train models on your data
+        epilog=f"""
+{Colors.BOLD}Examples:{Colors.RESET}
+  {Colors.DIM}# Train models{Colors.RESET}
   phenohunt train --data strains.csv --epochs 369
 
-  # Generate F1 hybrid
-  phenohunt cross --data strains.csv --parent1 "Blue Dream" --parent2 "OG Kush" --output f1.csv
+  {Colors.DIM}# Generate F1 hybrid{Colors.RESET}
+  phenohunt cross --data strains.csv --parent1 "Blue Dream" --parent2 "OG Kush"
 
-  # Generate F2 population
-  phenohunt f2 --data strains.csv --parent1 "Blue Dream" --parent2 "OG Kush" --count 10 --trait Analgesic
+  {Colors.DIM}# Generate F2 population{Colors.RESET}
+  phenohunt f2 --data strains.csv --parent1 "Blue Dream" --parent2 "OG Kush" --count 10
 
-  # Backcross
-  phenohunt backcross --data strains.csv --parent1 "Blue Dream" --parent2 "OG Kush" --backcross-to "Blue Dream"
+{Colors.BOLD}Documentation:{Colors.RESET}
+  https://github.com/Hosuay/C.C.R.O.P-PhenoHunt
 
-  # Analyze strains
-  phenohunt analyze --data strains.csv --strains "Blue Dream" "OG Kush"
-
-For more information, visit: https://github.com/Hosuay/C.C.R.O.P-PhenoHunt
+{Colors.DIM}Version {__version__}{Colors.RESET}
         """
     )
 
-    parser.add_argument('--version', action='version', version='PhenoHunter 3.0.0')
+    parser.add_argument('--version', action='store_true', help='Show version information')
     parser.add_argument('--config', type=str, help='Path to config file')
+    parser.add_argument('--no-color', action='store_true', help='Disable colored output')
 
     subparsers = parser.add_subparsers(dest='command', help='Command to execute')
 
@@ -402,12 +411,15 @@ For more information, visit: https://github.com/Hosuay/C.C.R.O.P-PhenoHunt
     analyze_parser.add_argument('--data', required=True, help='Path to strain CSV file')
     analyze_parser.add_argument('--strains', nargs='+', required=True, help='Strain names to analyze')
 
-    # Import command
-    import_parser = subparsers.add_parser('import', help='Import strain data')
-    import_parser.add_argument('--file', required=True, help='File to import (CSV or JSON)')
-    import_parser.add_argument('--output', type=str, help='Output CSV file')
-
     args = parser.parse_args()
+
+    # Handle no-color flag
+    if hasattr(args, 'no_color') and args.no_color:
+        Colors.disable()
+
+    # Handle version
+    if hasattr(args, 'version') and args.version:
+        return cmd_version(args)
 
     if not args.command:
         parser.print_help()
@@ -419,12 +431,21 @@ For more information, visit: https://github.com/Hosuay/C.C.R.O.P-PhenoHunt
         'cross': cmd_cross,
         'f2': cmd_f2,
         'backcross': cmd_backcross,
-        'analyze': cmd_analyze,
-        'import': cmd_import
+        'analyze': cmd_analyze
     }
 
     if args.command in commands:
-        return commands[args.command](args)
+        try:
+            return commands[args.command](args)
+        except KeyboardInterrupt:
+            print_warning("\nOperation cancelled by user")
+            return 130
+        except Exception as e:
+            print_error(f"Unexpected error: {e}")
+            import traceback
+            if os.getenv('DEBUG'):
+                traceback.print_exc()
+            return 1
     else:
         parser.print_help()
         return 1
